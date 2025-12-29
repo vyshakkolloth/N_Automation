@@ -4,7 +4,7 @@
 set -e
 
 # Activate the virtual environment
-source ./.venv/bin/activate
+source ./venv/Scripts/activate
 
 # Run the Python script
 python ./naukri.py

@@ -24,6 +24,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support import expected_conditions as EC
 import constants
 import chromedriver_autoinstaller
+chromedriver_autoinstaller.install()
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 # Add folder Path of your resume
@@ -40,7 +41,7 @@ mob = constants.MOBILE
 updatePDF = False
 
 # If Headless = True, script runs Chrome in headless mode without visible GUI
-headless = True
+headless = False
 
 # ----- No other changes required -----
 
@@ -240,7 +241,7 @@ def naukriLogin(headless=True):
             WebDriverWait(driver, 30).until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
-            time.sleep(60)
+            time.sleep(10)
 
             # Save screenshot after page fully loaded
             screenshot_path = os.path.join(os.getcwd(), "login_debug.png")  # current folder in GitHub Actions
@@ -274,7 +275,10 @@ def UpdateProfile(driver):
         log_msg("Profile page loaded.")
 
         # 2️⃣ Click on profile heading to open modal
-        profile_heading_xpath = '//*[@id="root"]/div[1]/div[4]/div/div/div/div[1]/div/div[2]/div[1]/h1/span'
+        # 
+        # profile_heading_xpath = '//*[@id="root"]/div[1]/div[4]/div/div/div/div[1]/div/div[2]/div[1]/h1/span'
+        profile_heading_xpath = '//*[@id="root"]/div/div/span/div/div/div/div/div/div[1]/div[1]/div/div/div/div[2]/div[1]/div/div[1]/em'
+
         WaitTillElementPresent(driver, profile_heading_xpath, locator="XPATH", timeout=15)
         prof_heading_elem = GetElement(driver, profile_heading_xpath, locator="XPATH")
         prof_heading_elem.click()
@@ -282,20 +286,20 @@ def UpdateProfile(driver):
         log_msg("Profile modal opened.")
 
         # 3️⃣ Update Mobile input
-        mobile_input_xpath = '//*[@id="mobile"]'
-        WaitTillElementPresent(driver, mobile_input_xpath, locator="XPATH", timeout=10)
-        mobile_input = GetElement(driver, mobile_input_xpath, locator="XPATH")
-        if mobile_input:
-            mobile_input.clear()
-            log_msg("Cleared mobile input. Waiting 5 seconds...")
-            time.sleep(5)
-            mobile_input.send_keys(mob)
-            log_msg(f"Entered mobile number: {mob}. Waiting 5 seconds...")
-            time.sleep(5)
-            driver.implicitly_wait(1)
+        # mobile_input_xpath = '//*[@id="mobile"]'
+        # WaitTillElementPresent(driver, mobile_input_xpath, locator="XPATH", timeout=10)
+        # mobile_input = GetElement(driver, mobile_input_xpath, locator="XPATH")
+        # if mobile_input:
+        #     mobile_input.clear()
+        #     log_msg("Cleared mobile input. Waiting 5 seconds...")
+        #     time.sleep(5)
+        #     mobile_input.send_keys(mob)
+        #     log_msg(f"Entered mobile number: {mob}. Waiting 5 seconds...")
+        #     time.sleep(5)
+        #     driver.implicitly_wait(1)
 
         # 4️⃣ Check & toggle HomeTown
-        hometown_xpath = '//*[@id="homeTown"]'
+        hometown_xpath = '//*[@id="locationSugg"]'
         WaitTillElementPresent(driver, hometown_xpath, locator="XPATH", timeout=10)
         hometown_input = GetElement(driver, hometown_xpath, locator="XPATH")
         if hometown_input:
@@ -311,9 +315,9 @@ def UpdateProfile(driver):
             log_msg(f"Entered HomeTown: {new_value}. Waiting 2 seconds...")
             time.sleep(2)
             driver.implicitly_wait(1)
-
+            
             # 4️⃣a Click on safe neutral element to register HomeTown change
-            click_outside_xpath = '//*[@id="sugMenu"]/div/div[1]/div'
+            click_outside_xpath = '//*[@id="sugDrp_locationSugg"]/ul/li/div'
             WaitTillElementPresent(driver, click_outside_xpath, locator="XPATH", timeout=10)
             outside_elem = GetElement(driver, click_outside_xpath, locator="XPATH")
             outside_elem.click()
@@ -382,12 +386,14 @@ def UploadResume(driver, resumePath):
         log_msg("Profile page loaded.")
 
         # 2️⃣ Scroll to the bottom of the page to make the Update Resume button visible
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
-        log_msg("Scrolled to bottom of the page.")
+        # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        # time.sleep(2)
+        # log_msg("Scrolled to bottom of the page.")
 
         # 3️⃣ Click the "Update Resume" button to open file input
-        update_resume_btn_xpath = '//*[@id="root"]/div[1]/div[4]/div/div/div/div[3]/div[2]/div[12]/div/div[3]/button'
+        # update_resume_btn_xpath = '//*[@id="root"]/div[1]/div[4]/div/div/div/div[3]/div[2]/div[12]/div/div[3]/button'
+        update_resume_btn_xpath = '//*[@id="lazyAttachCV"]/div/div[2]/div[2]/div/div[2]/div/div[1]/section/div/div[2]/input'
+        
         WaitTillElementPresent(driver, update_resume_btn_xpath, locator="XPATH", timeout=10)
         update_btn = GetElement(driver, update_resume_btn_xpath, locator="XPATH")
         update_btn.click()
@@ -397,7 +403,7 @@ def UploadResume(driver, resumePath):
         # 4️⃣ Upload resume file via new input field
         file_input_xpath = '//*[@id="undefined-err-inp"]'
         WaitTillElementPresent(driver, file_input_xpath, locator="XPATH", timeout=10)
-        file_input = GetElement(driver, file_input_xpath, locator="XPATH")
+        file_input = GetElement(driver, "attachCV", locator="ID")
         if file_input:
             file_input.send_keys(os.path.abspath(resumePath))
             log_msg(f"Resume file '{resumePath}' uploaded. Waiting 20 seconds for auto-save...")

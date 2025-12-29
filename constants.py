@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()  # load variables from .env file
 
-USERNAME = os.getenv("USERNAME")
+USERNAME = os.getenv("USERNAMES")
 PASSWORD = os.getenv("PASSWORD")
 MOBILE = os.getenv("MOBILE")
 ORIGINAL_RESUME_PATH = os.getenv("ORIGINAL_RESUME_PATH")
